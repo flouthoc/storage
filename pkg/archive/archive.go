@@ -24,6 +24,7 @@ import (
 	"github.com/containers/storage/pkg/system"
 	"github.com/containers/storage/pkg/unshare"
 	gzip "github.com/klauspost/pgzip"
+	"github.com/opencontainers/runc/libcontainer/userns"
 	"github.com/sirupsen/logrus"
 	"github.com/ulikunitz/xz"
 )
@@ -1159,7 +1160,7 @@ func (archiver *Archiver) TarUntar(src, dst string) error {
 		GIDMaps:     tarMappings.GIDs(),
 		Compression: Uncompressed,
 		CopyPass:    true,
-		InUserNS:    unshare.IsRootless(),
+		InUserNS:    userns.RunningInUserNS(),
 	}
 	archive, err := TarWithOptions(src, options)
 	if err != nil {
@@ -1174,7 +1175,7 @@ func (archiver *Archiver) TarUntar(src, dst string) error {
 		UIDMaps:   untarMappings.UIDs(),
 		GIDMaps:   untarMappings.GIDs(),
 		ChownOpts: archiver.ChownOpts,
-		InUserNS:  unshare.IsRootless(),
+		InUserNS:  userns.RunningInUserNS(),
 	}
 	return archiver.Untar(archive, dst, options)
 }
@@ -1194,7 +1195,7 @@ func (archiver *Archiver) UntarPath(src, dst string) error {
 		UIDMaps:   untarMappings.UIDs(),
 		GIDMaps:   untarMappings.GIDs(),
 		ChownOpts: archiver.ChownOpts,
-		InUserNS:  unshare.IsRootless(),
+		InUserNS:  userns.RunningInUserNS(),
 	}
 	return archiver.Untar(archive, dst, options)
 }
@@ -1294,7 +1295,7 @@ func (archiver *Archiver) CopyFileWithTar(src, dst string) (err error) {
 		UIDMaps:              archiver.UntarIDMappings.UIDs(),
 		GIDMaps:              archiver.UntarIDMappings.GIDs(),
 		ChownOpts:            archiver.ChownOpts,
-		InUserNS:             unshare.IsRootless(),
+		InUserNS:             userns.RunningInUserNS(),
 		NoOverwriteDirNonDir: true,
 	}
 	err = archiver.Untar(r, filepath.Dir(dst), options)

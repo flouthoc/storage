@@ -46,7 +46,7 @@ import (
 	mountpk "github.com/containers/storage/pkg/mount"
 	"github.com/containers/storage/pkg/parsers"
 	"github.com/containers/storage/pkg/system"
-	"github.com/containers/storage/pkg/unshare"
+	"github.com/opencontainers/runc/libcontainer/userns"
 	"github.com/opencontainers/selinux/go-selinux/label"
 	"github.com/sirupsen/logrus"
 	"github.com/vbatts/tar-split/tar/storage"
@@ -199,7 +199,7 @@ func supportsAufs() error {
 	// proc/filesystems for when aufs is supported
 	exec.Command("modprobe", "aufs").Run()
 
-	if unshare.IsRootless() {
+	if userns.RunningInUserNS() {
 		return ErrAufsNested
 	}
 

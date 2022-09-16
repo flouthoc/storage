@@ -15,7 +15,7 @@ import (
 	"github.com/containers/storage/pkg/archive"
 	"github.com/containers/storage/pkg/reexec"
 	"github.com/containers/storage/pkg/system"
-	"github.com/containers/storage/pkg/unshare"
+	"github.com/opencontainers/runc/libcontainer/userns"
 )
 
 type applyLayerResponse struct {
@@ -35,7 +35,7 @@ func applyLayer() {
 	runtime.LockOSThread()
 	flag.Parse()
 
-	inUserns := unshare.IsRootless()
+	inUserns := userns.RunningInUserNS()
 	if err := chroot(flag.Arg(0)); err != nil {
 		fatal(err)
 	}
@@ -94,7 +94,7 @@ func applyLayerHandler(dest string, layer io.Reader, options *archive.TarOptions
 	}
 	if options == nil {
 		options = &archive.TarOptions{}
-		if unshare.IsRootless() {
+		if userns.RunningInUserNS() {
 			options.InUserNS = true
 		}
 	}

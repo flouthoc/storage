@@ -404,24 +404,6 @@ func hasFullUsersMappings() (bool, error) {
 func IsRootless() bool {
 	isRootlessOnce.Do(func() {
 		isRootless = getRootlessUID() != 0 || getenv(UsernsEnvName) != ""
-		if !isRootless {
-			hasCapSysAdmin, err := HasCapSysAdmin()
-			if err != nil {
-				logrus.Warnf("Failed to read CAP_SYS_ADMIN presence for the current process")
-			}
-			if err == nil && !hasCapSysAdmin {
-				isRootless = true
-			}
-		}
-		if !isRootless {
-			hasMappings, err := hasFullUsersMappings()
-			if err != nil {
-				logrus.Warnf("Failed to read current user namespace mappings")
-			}
-			if err == nil && !hasMappings {
-				isRootless = true
-			}
-		}
 	})
 	return isRootless
 }

@@ -109,8 +109,9 @@ func applyLayerHandler(dest string, layer io.Reader, options *archive.TarOptions
 
 	cmd := reexec.Command("storage-applyLayer", dest)
 	cmd.Stdin = layer
-	env := append(os.Environ(), fmt.Sprintf("OPT=%s", data))
-	cmd.Env = append(cmd.Env, env...)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("OPT=%s", data))
+	//env := append(os.Environ(), fmt.Sprintf("OPT=%s", data))
+	//cmd.Env = append(cmd.Env, env...)
 
 	outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
 	cmd.Stdout, cmd.Stderr = outBuf, errBuf

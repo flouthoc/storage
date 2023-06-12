@@ -10,9 +10,8 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	drivers "github.com/containers/storage/drivers"
-	_ "github.com/containers/storage/drivers/register"
 	cfg "github.com/containers/storage/pkg/config"
+	"github.com/containers/storage/pkg/fsutils"
 	"github.com/containers/storage/pkg/idtools"
 	"github.com/sirupsen/logrus"
 )
@@ -312,9 +311,9 @@ func getRootlessStorageOpts(rootlessUID int, systemOpts StoreOptions) (StoreOpti
 	}
 	if opts.GraphDriverName == "" {
 		if len(systemOpts.GraphDriverPriority) == 0 {
-			driversMap := drivers.ScanPriorDrivers(opts.GraphRoot)
+			driversMap := fsutils.ScanPriorDrivers(opts.GraphRoot)
 
-			for _, name := range drivers.Priority {
+			for _, name := range fsutils.DriverPriority {
 				if _, prior := driversMap[name]; prior {
 					opts.GraphDriverName = name
 					break
